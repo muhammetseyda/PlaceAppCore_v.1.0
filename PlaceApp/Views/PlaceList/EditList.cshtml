@@ -1,0 +1,40 @@
+﻿@model PlaceApp.Models.PlaceLists
+
+<h2>Liste Düzenleme</h2>
+
+<form asp-action="EditList" method="post">
+    <div hidden>
+        <input asp-for="Id" id="Id" name="Id" />
+        <input asp-for="CreatedDate" id="CreatedDate" name="CreatedDate" />
+        <input id="UpdateOn" name="UpdateOn" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="form-group">
+        <label for="ListName">Liste Adı</label>
+        <input asp-for="ListName" type="text" class="form-control" id="ListName" name="ListName" required>
+    </div>
+    <div class="form-group">
+        <label for="ListDescription">Liste Açıklama</label>
+        <textarea asp-for="ListDescription" class="form-control" id="ListDescription" name="ListDescription"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Mekanlar</label>
+        @if(Model.Places.Count != null)
+        {
+            @foreach (var place in Model.Places)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="place-@place.Id" name="SelectedPlaceIds" value="@place.Id"
+                    @(Model.PlaceIds.Contains(place.Id.ToString()) ? "checked" : "")>
+                    <label class="form-check-label" for="place-@place.Id">
+                        @place.Name
+                    </label>
+                </div>
+            }
+        }
+        else
+        {
+            <label>Mekan Bulunamadı</label>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Listeyi Güncelle</button>
+</form>

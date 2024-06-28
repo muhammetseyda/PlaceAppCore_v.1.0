@@ -1,0 +1,56 @@
+﻿@model RegisterViewModel
+
+<h1>Kayıt Ol</h1>
+
+<form asp-controller="Account" asp-action="Register" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <div class="form-group">
+        <label asp-for="FirstName" class="required-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" name="Phone" placeholder="(5XX) XXX-XX-XX" autocomplete="off" onkeypress="return SadeceSayi(event)" maxlength="15" id="phone" type="text" class="form-control" />
+        <span asp-validation-for="Phone"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RePassword"></label>
+        <input asp-for="RePassword" type="password" class="form-control" autocomplete="off" />
+        <span asp-validation-for="RePassword"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gender"></label>
+        @* <input asp-for="Gender" class="form-control" /> *@
+        <select asp-for="Gender" class="form-control">
+            <option value="">Select a Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+        <span asp-validation-for="Gender"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+</form>

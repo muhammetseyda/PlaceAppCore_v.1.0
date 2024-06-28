@@ -1,0 +1,79 @@
+﻿@model List<PlaceApp.Models.SharePlace>
+
+<h2>Paylaşılan Yerler</h2>
+
+@foreach (var sharePlace in Model)
+{
+    <div class="card mb-3" data-id="@sharePlace.Id">
+        <div class="card-header">
+            <p>@sharePlace.UserName bir yer paylaştı.</p>
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@sharePlace.Id">
+                @sharePlace.Name
+            </button>
+            <div class="star-ratings">
+                <span class="star" data-rating="1">&#9734;</span>
+                <span class="star" data-rating="2">&#9734;</span>
+                <span class="star" data-rating="3">&#9734;</span>
+                <span class="star" data-rating="4">&#9734;</span>
+                <span class="star" data-rating="5">&#9734;</span>
+                @{
+                    var puanlar = 0.0;
+                    puanlar = ((sharePlace.AtmosphereRating + sharePlace.FoodRating + sharePlace.ServiceRating) / 3);
+                    }
+                <input type="hidden" id="puanlar_@sharePlace.Id" name="puanlar_@sharePlace.Id" value="@puanlar">
+                <span>@puanlar.ToString("0.00")</span>
+            </div>
+        </div>
+        <div id="collapse-@sharePlace.Id" class="collapse">
+            <div class="card-body">
+                <h5 class="card-title">
+                    @sharePlace.Name -
+                    @if (sharePlace.Link1 != null)
+                    {
+                        <a href="@sharePlace.Link1" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    }
+
+                </h5>
+                <p class="card-text">
+                    Şehir: @sharePlace.Town/@sharePlace.City<br />
+                    Kategori: @sharePlace.Category<br />
+                    Adres: @sharePlace.Address<br />
+                </p>
+                <a href="/Share/PlaceDetails/@sharePlace.Id" class="btn btn-info btn-sm">Detaylar</a>
+            </div>
+        </div>
+    </div>
+}
+<style>
+    .star-ratings {
+        float: right; /* Yıldızları sağa taşı */
+        margin-top: 5px; /* İstediğiniz yüksekliği ayarlayın */
+    }
+
+        .star-ratings .star {
+            font-size: 20px; /* Yıldız simgesi boyutu */
+            margin-right: 5px; /* Yıldızlar arası boşluk */
+        }
+</style>
+<script>
+    // console.log(puan);
+
+    document.querySelectorAll(".card").forEach(function (card) {
+        var kartKimligi = card.getAttribute("data-id");
+        var puan = parseFloat(document.getElementById("puanlar_" + kartKimligi).value);
+        // Kartın içindeki yıldızları ayarlayın
+        var yildizlar = card.querySelectorAll(".star");
+        yildizlar.forEach(function (yildiz, index) {
+            var yildizDegeri = index + 1; // Yıldızın değeri (1'den başlayarak)
+            if (yildizDegeri <= puan) {
+                yildiz.innerHTML = "&#9733;"; // Dolu yıldız
+            } else if (yildizDegeri - 0.5 === puan) {
+                yildiz.innerHTML = "&#9730;"; // Yarı dolu yıldız (isteğe bağlı)
+            } else {
+                yildiz.innerHTML = "&#9734;"; // Boş yıldız
+            }
+        });
+    });
+</script>

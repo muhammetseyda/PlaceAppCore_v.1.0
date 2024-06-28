@@ -1,0 +1,104 @@
+﻿@using Microsoft.EntityFrameworkCore;
+@model PlaceApp.Models.Users
+
+<h1 class="text-center">Edit Place</h1>
+<style>
+    label {
+        font-size: 20px;
+    }
+</style>
+@Html.ValidationMessage("ProfileError")
+<form asp-controller="Profile" asp-action="Edit" method="post">
+    <div class="d-none">
+        <input asp-for="UserId" value="@User.Identity.Name" />
+        <input asp-for="Id" />
+        <input asp-for="Password" />
+        <input id="UpdateOn" name="UpdateOn" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="form-group">
+        <label for="FirstName">FirstName:</label>
+        <input asp-for="FirstName" id="FirstName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="LastName">LastName:</label>
+        <input asp-for="LastName" id="LastName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="Email">LastName:</label>
+        <input asp-for="Email" id="Email" class="form-control" readonly/>
+    </div>
+    <div class="form-group">
+        <label for="Phone">LastName:</label>
+        <input asp-for="Phone" id="Phone" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Gender">Gender:</label>
+        <select id="Gender" name="Gender" class="form-control">
+            <option value="">Select a Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </div>
+    <div class="text-center">
+        <button type="submit" id="submitBtn" class="btn btn-primary">Save</button>
+    </div>
+    
+</form>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function (event) {
+        var gender = document.getElementById('Gender');
+        var nameInput = document.getElementById('Name');
+        // var email = document.getElementById('Email');
+        var firstname = document.getElementById('FirstName');
+        var lastname = document.getElementById('LastName');
+        console.log(cityInput);
+        console.log(categorySelect);
+        var errorMessages = [];
+
+        // Category select'i boş mu kontrol et
+        if (gender.value === '') {
+            errorMessages.push('Gender Alanını Boş Bırakmayınız');
+        }
+
+        // Name input'u boş mu kontrol et
+        if (nameInput.value === '') {
+            errorMessages.push('Name Alanını Boş Bırakmayınız');
+        }
+
+        // // City input'u boş mu kontrol et
+        // if (email.value === '') {
+        //     errorMessages.push('Email Alanını Boş Bırakmayınız');
+        // }
+
+        // Town input'u boş mu kontrol et
+        if (firstname.value === '') {
+            errorMessages.push('FirstName Alanını Boş Bırakmayınız');
+        }
+        if (lastname.value === '') {
+            errorMessages.push('LastName Alanını Boş Bırakmayınız');
+        }
+
+        if (errorMessages.length > 0) {
+            event.preventDefault(); // Formun gönderilmesini engelle
+            var errorMessagesHtml = '';
+            errorMessages.forEach(function (message) {
+                errorMessagesHtml += '<p>' + message + '</p>';
+            });
+
+            // jQuery Toast ile hata mesajlarını göster
+            $.toast({
+                text: errorMessagesHtml,
+                position: 'top-right',
+                loaderBg: '#ff6849',
+                icon: 'error',
+                hideAfter: 2000, // Hata mesajlarını 5 saniye boyunca göster
+                stack: false
+            });
+        }
+    });
+</script>
+

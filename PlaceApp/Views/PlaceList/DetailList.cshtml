@@ -1,0 +1,34 @@
+﻿@model PlaceApp.Models.PlaceLists
+
+<h2>Liste Detayları</h2>
+
+<div class="form-group">
+    <label for="ListName">Liste Adı</label>
+    <input type="text" class="form-control" id="ListName" name="ListName" value="@Model.ListName" readonly />
+</div>
+<div class="form-group">
+    <label for="ListDescription">Liste Açıklama</label>
+    <textarea class="form-control" id="ListDescription" name="ListDescription" readonly>@Model.ListDescription</textarea>
+</div>
+<div class="form-group">
+    <label>Eklenen Mekanlar</label>
+    @if (Model.Places != null && Model.Places.Any())
+    {
+        <ul>
+            @foreach (var place in Model.Places)
+            {
+                <li>@place.Name
+                    <a href="@Url.Action("Details", "Place", new { id = place.Id })">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Mekanlar Yüklenemedi</p>
+    }
+</div>
+
+<a asp-controller="PlaceList" asp-action="Index">Listelere Geri Dön</a>

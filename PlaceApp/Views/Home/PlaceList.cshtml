@@ -1,0 +1,361 @@
+﻿@using DocumentFormat.OpenXml.InkML;
+@using PlaceApp.Data;
+@inject AppDbContext _context
+@using Microsoft.EntityFrameworkCore;
+@model List<PlaceApp.Models.SharePlaceList>
+
+<h2>Paylaşılan Listeler</h2>
+@{
+    var currentDate = DateTime.Now;
+    var accountUser = _context.Users.Where(x => x.Email == User.Identity.Name).SingleOrDefault();
+}
+@foreach (var sharePlace in Model)
+{
+    <div class="modal fade" id="commentModal_@sharePlace.Id" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentModalLabel">Yorum Ekle @sharePlace.Id</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal(@sharePlace.Id)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <form id="commentForm">
+                    <input type="hidden" id="commentModalUserId" name="userId">
+                    <input type="hidden" id="commentModalListId" name="listId">
+                        @{
+                            var comments = _context.Comment.Where(x => x.ListId == sharePlace.Id).ToList();
+                        }
+                        <div id="comments_@sharePlace.Id" style="border-width: medium">
+                        @foreach(var comment in comments)
+                        {
+                            
+                                
+                            var commentuser = _context.Users.Where(x => x.UserId == comment.UserId).SingleOrDefault();
+                            var authuser =  _context.Users.Where(x => x.Email == User.Identity.Name).Select(x => x.UserId).SingleOrDefault();
+                            var isLikedcom = _context.Like.Where(x => x.UserId == authuser && x.ContentId == comment.Id && x.IsLiked == 1).Any();
+                            
+                           <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <img src="~/images/profile.png" style="height: 30px; width: 30px;" />
+                                <div style="margin-left: 10px;">
+                                    <label style="font-size: 13px; font-weight: bold; margin: 0;">@commentuser.FirstName</label>
+                                    <p style="font-size: 11px; margin: 0;">@comment.Text</p>
+                                    <i class="fa-solid fa-heart" data-comment-id="@comment.Id" style="color: @(isLikedcom ? "red" : "")" onclick="likeComment(@comment.Id)" id="comment_heart_@comment.Id"></i>
+                                     <span id="like-count-@comment.Id">@comment.LikeCount beğeni</span>
+                                </div>
+                            </div>
+                        }
+                        </div>
+                        
+                    <div class="form-group">
+                        <label for="commentText">Yorum:</label>
+                        <textarea class="form-control" id="commentText_@sharePlace.Id" name="text"></textarea>
+                        
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal(@sharePlace.Id)">Kapat</button>
+                <button type="button" class="btn btn-primary" onclick="addComment()">Yorum Ekle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="card mb-3" style="width: 400px;">
+        <div class="card-header" style="height: 70px">
+            <img id="sharePlace.UserName" src="~/images/profile.png" style="height: 50px; width: 50px" />
+            <button class="btn btn-link" type="button">
+                @sharePlace.UserName
+            </button>
+            <p style="float: right;">
+                @{
+                    TimeSpan timeDifference = currentDate - sharePlace.CreatedDate;
+                    int daysAgo = (int)timeDifference.TotalDays;
+                    int hoursAgo = (int)timeDifference.TotalHours;
+                    int minutesAgo = (int)timeDifference.TotalMinutes;
+                }
+                @if( daysAgo > 30)
+                {
+                    @(sharePlace.CreatedDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR")))
+                } else if (daysAgo > 0)
+                {
+                    <p style="float: right;">@daysAgo gün önce</p>
+                } else if (hoursAgo > 0)
+                {
+                    <p style="float: right;">@hoursAgo saat önce</p>
+                } else if (minutesAgo > 0)
+                {
+                    <p style="float: right;">@minutesAgo dakika önce</p>
+                } else
+                {
+                    <p style="float: right;"> Şimdi</p>
+                }
+            </p>
+             <div class="dropdown">
+                            <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-user fa-2xl"></i>
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" asp-controller="Share" asp-action="AddPlaceListFromShareList" asp-route-listId="@sharePlace.Id" asp-route-userId="@accountUser.UserId">Add PlaceList</a>
+
+                            </div>
+                        </div>
+        </div>
+        <div id="collapse-@sharePlace.Id" style=" overflow: hidden;">
+            <h5 class="card-title" style="text-align: center; margin-top: 10px;"> @sharePlace.ListName  </h5>
+            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                <p class="card-text">
+                    @foreach (var placeId in sharePlace.PlaceIds.Split(','))
+                    {
+                        @if (int.TryParse(placeId, out var id))
+                        {
+                            var place = _context.SharePlace.FirstOrDefault(p => p.Id == id);
+                            if (place != null)
+                            {
+                                <li>
+                                    @place.Name - @place.City - @place.Category - <a class="dropdown-item" asp-controller="Share" asp-action="AdddPlaceFromSharePlaceList" asp-route-placeId="@placeId" asp-route-userId="@accountUser.UserId">Add Place</a>
+                                </li>
+                            }
+                        }
+                    }
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px">
+                @{
+                    var user = _context.Users.Where(x => x.Email == User.Identity.Name).Select(x => x.UserId).SingleOrDefault();
+                    var isLiked = _context.Like.Where(x => x.UserId == user && x.ContentId == sharePlace.Id && x.IsLiked == 1).Any();
+                }
+                <i id="heart_@sharePlace.Id" class="fa-solid fa-heart" style="color: @(isLiked ? "red" : "")" onclick="toggleHeart(@sharePlace.Id)"></i>
+               <i id="comment_@sharePlace.Id" class="fa-solid fa-comment" onclick="openCommentModal('@accountUser.UserId', @sharePlace.Id)"></i>
+                <i id="share_@sharePlace.Id" class="fa-solid fa-share"></i>
+                <button class="likeButton" data-toggle="modal" data-target="#likeModal_@sharePlace.Id" data-listid="@sharePlace.Id">
+                    <span id="likeCount_@sharePlace.Id">@sharePlace.LikeCount beğeni</span>
+                </button>
+
+                <div class="modal fade" id="likeModal_@sharePlace.Id" tabindex="-1" role="dialog" aria-labelledby="likeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="likeModalLabel">Beğenenler @sharePlace.ListName</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="likeModalBody_@sharePlace.Id">
+                                <!-- Beğenenlerin isimleri burada gösterilecek -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @* <a href="/Share/PlaceListDetails/@sharePlace.Id" class="btn btn-info btn-sm">Detaylar</a> *@
+        </div>
+    </div>
+    <style>
+        #collapse-@sharePlace.Id .card-body::-webkit-scrollbar {
+            width: 0 !important;
+            display: none !important;
+        }
+    </style>
+  
+    <script>
+        function toggleHeart(sharePlaceId) {
+            var heartIcon = $('#heart_' + sharePlaceId);
+            var isLiked = heartIcon.css("color") === "rgb(255, 0, 0)";
+
+            $.ajax({
+                url: "/Like/ToggleLike",
+                type: "POST",
+                data: { listId: sharePlaceId, isLiked: isLiked },
+                success: function (data) {
+                    if (data.success) {
+                        if (isLiked) {
+                            heartIcon.css("color", "black");
+                        } else {
+                            heartIcon.css("color", "red"); 
+                        }
+                        var likeCountElement = $("#likeCount_" + sharePlaceId);
+                        console.log(likeCountElement);
+                        likeCountElement.text(data.likeCount + " beğeni");
+                    } else {
+                        console.error("Beğeni değiştirme hatası: " + data.message);
+                    }
+                },
+                error: function (error) {
+                    console.error("Hata oluştu: " + error);
+                }
+            });
+        }
+    </script>
+    <script>
+    function openCommentModal(userId, listId) {
+        // Modalı aç
+        console.log(listId, userId);
+        $('#commentModal_' + listId).modal('show');
+
+        // Kullanıcı ve liste bilgilerini modal içine yerleştir
+        $('#commentModalUserId').val(userId);
+        $('#commentModalListId').val(listId);
+    }
+</script>
+
+<script>
+    function addComment() {
+    var userId = $('#commentModalUserId').val();
+    var listId = $('#commentModalListId').val();
+    var text = $('#commentText_' + listId).val();
+
+    $.ajax({
+        url: "/Comment/AddComment",
+        type: "POST",
+        data: {
+            userId: userId,
+            listId: listId,
+            text: text
+        },
+        success: function (data) {
+            if (data.success) {
+                console.log(data);
+                $('#commentText_' + listId).val("");
+
+                addSingleComment(listId,userId,text, data.comment.id, data.comment.isLiked, data.comment.likeCount);
+                 
+                @* $('#commentModal_' + listId).modal('hide'); // Modal penceresini kapat *@
+                
+            } else {
+                console.error("Yorum eklerken hata oluştu: " + data.message);
+            }
+        },
+        error: function (error) {
+            console.error("Hata oluştu: " + error);
+        }
+    });
+}
+
+</script>
+
+<script>
+    function getComments(listId) {
+    $.ajax({
+        type: "GET",
+        url: "/Comment/GetComment?listId=" + listId,
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                // GET isteği başarılı oldu
+                var comments = data.comments; // Alınan yorumları kullanın
+                console.log(comments.text);
+                var commentsDiv = $('#comments_' + listId);
+                commentsDiv.empty(); // Div içeriğini temizle
+                $.each(comments, function (index, comment) {
+                    var newComment = '<label>' + comment.userId + '</label><label>' + comment.text + '</label>';
+                    commentsDiv.append(newComment); // Yeni yorumları div içeriğine ekle
+                });
+            } else {
+                console.error("GET isteği sırasında bir hata oluştu: " + data.message);
+            }
+        },
+        error: function (error) {
+            console.error("GET isteği sırasında bir hata oluştu: " + error);
+        }
+    });
+}
+</script>
+<script> 
+    function closeModal(listId){
+        $('#commentModal_' + listId).modal('hide');
+    }
+</script>
+<script>
+    function addSingleComment(sharePlaceId, userId, text, commentId, isLikedcom, likeCount) {
+        
+        var newComment = `
+        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+            <img src="/images/profile.png" style="height: 30px; width: 30px;" />
+            <div style="margin-left: 10px;">
+                <label style="font-size: 13px; font-weight: bold; margin: 0;">${'@accountUser.FirstName'}</label>
+                <p style="font-size: 11px; margin: 0;">${text}</p>
+                <i class="fa-solid fa-heart" data-comment-id="${commentId}" style="cursor: pointer; ${isLikedcom ? "color: red;" : ""}" onclick="likeComment(${commentId})" id="comment_heart_${commentId}"></i>
+                <span id="like-count-${commentId}">${likeCount}</span>
+            </div>
+        </div>`;
+
+
+    $('#comments_' + sharePlaceId).append(newComment);
+}
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
+<script>
+    $(document).ready(function () {
+        $(".likeButton").on("click", function () {
+           var listId = $(this).data("listid"); 
+
+            $.ajax({
+                type: "GET",
+                url: "/Like/LikeUser?listId=" + listId,
+                dataType:"json",
+                success: function (result) {
+                    if (result.success) {
+                        console.log(result);
+                        var likeModalBody = $("#likeModalBody_" + listId);
+                        likeModalBody.empty();
+
+                        result.likedUsers.forEach(function (user) {
+                            likeModalBody.append("<p>" + user.firstName + "</p>");
+                        });
+
+                        
+                        $("#likeModal_" + listId).modal("show");
+                    } else {
+                        console.log(result.message);
+                    }
+                },
+                error: function (error) {
+                    console.log("Hata oluştu: " + error.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    function likeComment(commentId) {
+        var heartIcon = $('#comment_heart_' + commentId);
+        var isLiked = heartIcon.css("color") === "rgb(255, 0, 0)";
+        console.log(isLiked);
+
+        // Ajax çağrısıyla LikeCount'u artır
+        $.ajax({
+            type: "POST",
+            url: "/Comment/ToggleLike", // Bu URL'yi kendi projenize uygun olarak değiştirin
+            data: { commentId: commentId, isLiked: isLiked  },
+            success: function (result) {
+               if (result.success) {
+                    if (isLiked) {
+                        heartIcon.css("color", "black");
+                    } else {
+                        heartIcon.css("color", "red"); 
+                    }
+                    var likeCountElement = $("#like-count-" + commentId);
+                    console.log(likeCountElement);
+                    likeCountElement.text(result.likeCount + " beğeni");
+                } else {
+                    console.error("Beğeni değiştirme hatası: " + result.message);
+                }
+            },
+            error: function () {
+                alert("Bir hata oluştu");
+            }
+        });
+    }
+</script>
+
+}
+

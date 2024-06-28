@@ -1,0 +1,101 @@
+﻿<div class="container">
+    <!-- Üst Kısım -->
+    <div class="row">
+        <div class="col-6">
+            <!-- Sol üstteki parça (Hava Durumu) -->
+            <div class="weather">
+                <div class="weather-container">
+                    <img class="weather-icon" src="~/images/warm.png" alt="Hava Durumu İkonu">
+                    <div class="weather-info">
+                        <div class="location">İstanbul, Beşiktaş</div>
+                        <div class="temperature">25°C</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <!-- Sağ üst kısım -->
+            <div class="row">
+                <div class="col-6">
+                    <!-- Tutorial butonu -->
+                    <button class="btn btn-primary" id="tutorial_css">Tutorial</button>
+                </div>
+                <div class="col-6 text-right">
+                    <!-- Giriş yap ve Üye ol butonları -->
+                    <button class="btn btn-success" >Giriş Yap</button>
+                    <button class="btn btn-info">Üye Ol</button>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-6">
+                    <!-- Tüm Paylaşılan Listeler butonu -->
+                    <form method="get" action="@Url.Action("PlaceList", "Home")">
+                        <button class="btn btn-secondary">Tüm Paylaşılan Listeler</button>
+                    </form>
+
+                </div>
+                <div class="col-6 text-right">
+                    <!-- Paylaşılan Tüm Yerler butonu -->
+                    <form method="get" action="@Url.Action("Place", "Home")">
+                        <button type="submit" class="btn btn-warning">Paylaşılan Tüm Yerler</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alt Kısım -->
+    <div class="row mt-3">
+        <div class="col-6">
+            <!-- Paylaşılan Listeler Listesi -->
+            <ul class="list-group">
+                <h5 class="list-group-item list-group-item-action active">Paylaşılan Listeler</h5>
+                <!-- Liste öğeleri buraya eklenir -->
+                <li class="list-group-item">Paylaşılan Liste 1</li>
+                <li class="list-group-item">Paylaşılan Liste 2</li>
+                <!-- ... -->
+            </ul>
+        </div>
+        <div class="col-6">
+            <!-- Paylaşılan Yerler Listesi -->
+            <ul class="list-group">
+                <h5 class="list-group-item list-group-item-action active">Paylaşılan Yerler</h5>
+                <!-- Liste öğeleri buraya eklenir -->
+                <li class="list-group-item">Paylaşılan Yer 1</li>
+                <li class="list-group-item">Paylaşılan Yer 2</li>
+                <!-- ... -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS stilini burada tanımlayabilirsiniz */
+    .weather-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+    }
+
+    .weather-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .weather-info {
+        text-align: left;
+        margin-left: 20px;
+    }
+
+    .location {
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    .temperature {
+        font-size: 2em;
+        font-weight: bold;
+    }
+</style>

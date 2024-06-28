@@ -1,0 +1,66 @@
+﻿@model List<PlaceApp.Models.PlaceLists>
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Listeler</h2>
+    <a href="/PlaceList/CreateList"><i class="fa-solid fa-square-plus fa-2xl"></i></a>
+</div>
+<div class="container">
+    @foreach (var list in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <a data-toggle="collapse" href="#collapse_@list.Id">
+                @list.ListName
+                </a>
+
+                <a href="/Share/PlaceList" onclick="event.preventDefault(); document.getElementById('shareplace-form-@list.Id').submit();"><i class="fa-solid fa-share"></i></a>
+                <form id="shareplace-form-@list.Id" method="post" asp-controller="Share" asp-action="PlaceList" class="d-none">
+                    <input type="hidden" id="id" name="id" value="@list.Id">
+                    <button type="submit" class="btn btn-danger"></button>
+                </form>
+            </div>
+            <div id="collapse_@list.Id" class="collapse ">
+                <div class="card card-body">
+                    <p class="card-text">@list.ListDescription</p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Oluşturulma Tarihi</th>
+                                <th>Mekanlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@list.CreatedDate</td>
+                                <td>
+                                    @foreach (var place in list.Places.Take(2))
+                                    {
+                                        <a asp-controller="Place" asp-action="Details" asp-route-id="@place.Id" >
+                                            @place.Name
+                                        </a>
+                                        <br />
+
+                                    }
+                                    @if(list.Places.Count >= 2)
+                                    {
+                                        <p>...</p>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div>
+                        <a asp-controller="PlaceList" asp-action="DetailList" asp-route-id="@list.Id" class="btn btn-primary">
+                        Detayları Göster
+                    </a>
+                        <a asp-controller="PlaceList" asp-action="EditList" asp-route-id="@list.Id" class="btn btn-warning">
+                        Listeyi Düzenle
+                    </a>
+                        <a asp-controller="PlaceList" asp-action="DeleteList" asp-route-id="@list.Id" class="btn btn-danger">
+                        Listeyi Sil
+                    </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

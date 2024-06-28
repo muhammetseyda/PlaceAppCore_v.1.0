@@ -1,0 +1,179 @@
+﻿@model List<PlaceApp.Models.Places>
+@{
+    int sira = 1;
+    if (ViewBag.PageNumber > 1)
+    {
+        for (int i = 0; i < (ViewBag.PageNumber - 1) * ViewBag.PageSize; i++)
+        {
+            sira++;
+        }
+    }
+
+}
+
+<label>Hoşgeldiiin !!!</label>
+<label>@User.Identity.Name</label>
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-3">
+            <a class="btn btn-primary" href="/Place/AddPlace" role="button">Add Place</a>
+        </div>
+
+        <div class="col-3">
+            <a class="btn btn-primary" href="/Place/Index" role="button">All Place</a>
+        </div>
+
+        <div class="col-3">
+            <form method="get" action="/Place/WentPlace">
+                <button class="btn btn-primary" type="submit" name="visit" value="1">Visited Place</button>
+            </form>
+        </div>
+
+        <div class="col-3">
+            <form method="post" action="/Place/DontWentPlace">
+                <button class="btn btn-primary" type="submit">Dont Visited Place</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<h2>Places</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Sıra</th>
+            @* <th>User Id</th> *@
+            <th>Name</th>
+            <th>Category</th>
+            <th>City</th>
+            <th>Address</th>
+            <th>Went</th>
+            <th>RetryWent</th>
+            <th>Instagram</th>
+            <th>Maps</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var place in Model)
+        {
+            var address = string.IsNullOrEmpty(place.Address) || place.Address.Length < 20 ? place.Address : $"{place.Address.Substring(0, 20)} ...";
+            <tr>
+                <td>
+                    <input type="checkbox" id="wentCheckbox_@place.Id" name="wentCheckbox" class="went-checkbox" data-item-id="@place.Id" @(place.Went ? "checked" : "") />
+                </td>
+                <td><a asp-controller="Place" asp-action="Details" asp-route-id="@place.Id"><i class="fa-solid fa-circle-info fa-beat"></i></a> </td>
+                <td><a asp-controller="Place" asp-action="Edit" asp-route-id="@place.Id"><i class="fa-solid fa-pencil fa-xsm"></i></a></td>
+                <td>@sira</td>
+                @* <td>@place.UserId</td> *@
+                <td>@place.Name</td>
+                <td>@place.Category</td>
+                <td>@place.Town / @place.City</td>
+                <td>@address</td>
+                <td>
+                    @if (@place.Went == true)
+                    {
+                        <i class="fas fa-solid fa-check"></i>
+
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+                    }
+                </td>
+                <td>
+                    @if (place.RetryWent == true)
+                    {
+                        <i class="fas fa-solid fa-check"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-xmark" style="color: #ff0000;"></i>
+                    }
+                </td>
+                <td>
+                    <a href="@place.Link1" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="@place.MapsLink" target="_blank">
+                        <i class="fa-solid fa-map"></i>
+                    </a>
+                </td>
+
+            </tr>
+            sira++;
+        }
+    </tbody>
+</table>
+
+@*EXCEL İNDİRME BUTONU*@
+@* <a asp-controller="Excel" asp-action="ExportToExcel" class="btn btn-primary">Excel İndir</a> *@
+<div class="text-center" style="margin-top: 40px;">
+    <div class="btn-group" role="group">
+
+        <a asp-action="Index" asp-route-page="1" class="btn btn-primary">İlk</a>
+        @*             <button class="btn btn-primary" type="submit" name="page" value="1">İlk</button>
+        *@
+        @if (ViewBag.PageNumber > 1)
+        {
+            <a asp-action="Index" asp-route-page="@(ViewBag.PageNumber - 1)" class="btn btn-primary">Önceki</a>
+            @*                 <button class="btn btn-primary" type="submit" name="page" value="@(ViewBag.PageNumber - 1)">Önceki</button>
+        *@  }
+
+        @for (int i = Math.Max(ViewBag.PageNumber - (5 / 2), 1); i <= Math.Min(ViewBag.PageNumber + (5 / 2), (int)Math.Ceiling((double)ViewBag.Place / ViewBag.PageSize)); i++)
+        {
+            <a asp-action="Index" asp-route-page="@i" class="btn btn-primary">@i</a>
+            @* <button class="btn btn-primary" type="submit" name="page" value="@i">@i</button> *@
+        }
+
+        @if (ViewBag.PageNumber < (int)Math.Ceiling((double)ViewBag.Place / ViewBag.PageSize))
+        {
+            <a asp-action="Index" asp-route-page="@(ViewBag.PageNumber + 1)" class="btn btn-primary">Sonraki</a>
+            @* <button class="btn btn-primary" type="submit" name="page" value="@(ViewBag.PageNumber + 1)">Sonraki</button> *@
+        }
+
+        <button class="btn btn-primary" type="submit" name="page" value="@((int)Math.Ceiling((double)ViewBag.Place / ViewBag.PageSize))">Son</button>
+
+
+    </div>
+</div>
+
+
+
+<script>
+    var wentCheckboxes = document.querySelectorAll('.went-checkbox');
+
+    wentCheckboxes.forEach(function (wentCheckbox) {
+        wentCheckbox.addEventListener('change', function () {
+            var itemId = this.getAttribute('data-item-id');
+            console.log(itemId);
+            var went = this.checked;
+
+            $.ajax({
+                url: '/Place/SetWentTrue',
+                type: 'POST',
+                data: { went: went, id: itemId },
+                success: function (response) {
+                    console.log('Went işaretlendi, Went değeri true oldu.');
+
+                    // Sayfayı otomatik olarak yenile (1 saniye bekleyerek)
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1000);
+                },
+                error: function (error) {
+                    console.error('Went işaretleme sırasında bir hata oluştu: ' + error);
+                }
+            });
+        });
+    });
+</script>
+
+
+
+

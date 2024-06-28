@@ -1,0 +1,32 @@
+﻿@model PlaceApp.Models.Profile.ProfileViewModel
+
+<h1>Profil Sayfası</h1>
+
+<p>Kullanıcı ID: @Model.UserId</p>
+<p>Ad: @Model.FirstName</p>
+<p>Soyad: @Model.LastName</p>
+<p>Profil Resmi: <img src="@Model.ImageUrl" alt="Profil Resmi" /></p>
+
+<h2>Kullanıcının Kaydettiği Yerler:</h2>
+<ul>
+    @foreach (var place in Model.Places)
+    {
+        <li>@place.Name</li>
+    }
+</ul>
+
+<h2>Kullanıcının Oluşturduğu Liste:</h2>
+<ul>
+    @foreach (var placeList in Model.PlaceLists)
+    {
+        <li>@placeList.ListName</li>
+    }
+</ul>
+
+<h2>Paylaşılan Liste:</h2>
+<ul>
+    @foreach (var sharePlaceList in Model.SharePlaceList)
+    {
+        <li>@sharePlaceList.ListName</li>
+    }
+</ul>

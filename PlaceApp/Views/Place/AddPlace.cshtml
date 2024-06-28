@@ -1,0 +1,180 @@
+﻿@using Microsoft.EntityFrameworkCore;
+@model PlaceApp.Models.Places
+
+<h1 class="text-center">Add Place</h1>
+<style>
+    label {
+        font-size: 20px;
+    }
+</style>
+<form asp-controller="Place" asp-action="AddPlace" method="post">
+    <div class="d-none">
+        <input asp-for="UserId" value="@User.Identity.Name" />
+        @* <input asp-for="Id" /> *@
+        <input id="CreatedOn" name="CreatedOn" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")"/>
+        <input id="UpdateOn" name="UpdateOn" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+        
+    </div>
+
+    <div class="form-group">
+        <label for="Name">Name:</label>
+        <input asp-for="Name" id="Name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Açıklama:</label>
+        <input asp-for="Description" id="Descripiton" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Category">Category:</label>
+        <select id="Category" name="Category" class="form-control">
+            <option value="">Select a Category</option>
+            @foreach (var category in @ViewBag.Category)
+            {
+                <option value="@category.Name">@category.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="cityDropdown">City:</label>
+        <select id="cityDropdown" name="City" class="form-control">
+            <option value="">Select a city</option>
+            @foreach (var city in @ViewBag.City)
+            {
+                <option value="@city.CityId">@city.CityName</option>
+            }
+        </select>
+    </div>
+    @* selected="@(Model.City == city.CityName ? "selected" : null)" *@
+    <div class="form-group">
+        <label for="townDropdown">Town:</label>
+        <select id="townDropdown" name="Town" class="form-control">
+            <option value="">Select a town</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Address">Address:</label>
+        <input asp-for="Address" id="Address" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Link1">Instagram Linki (Profil Linki):</label>
+        <input asp-for="Link1" id="Link1" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Link2">Instagram Reels Linki:</label>
+        <input asp-for="Link2" id="Link2"  class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="WebSiteLink">WebSiteLink:</label>
+        <input asp-for="WebSiteLink" id="WebSiteLink" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="MapsLink">MapsLink:</label>
+        <input asp-for="MapsLink" id="MapsLink" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Went">Went:</label>
+        <input type="checkbox" id="Went" name="Went" value="true"/>
+    </div>
+
+    <div class="form-group">
+        <label for="RetryWent">RetryWent:</label>
+        <input type="checkbox" id="RetryWent" name="RetryWent" value="true" />
+
+    </div>
+
+    <div class="text-center">
+        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg">Save</button>
+    </div>
+</form>
+
+<script>
+    console.log("console");
+    // Şehir ve ilçe dropdown listeleri
+    const cityDropdown = document.getElementById('cityDropdown');
+    const townDropdown = document.getElementById('townDropdown');
+    // Şehir seçildiğinde ilçe dropdown'ını güncelle
+    cityDropdown.addEventListener('change', function () {
+        const selectedCityId = this.value;
+
+        // Şehre göre ilçeleri getir
+        if (selectedCityId !== '') {
+            $.ajax({
+                url: "/Place/GetTownListByCityId?cityId=" + selectedCityId, 
+                type: 'GET',
+                success: function (data) {
+                    townDropdown.innerHTML = ''; // İlçe dropdown'ını temizle
+                    if (data.length > 0) {
+                        townDropdown.innerHTML = '<option value="">Select a town</option>';
+                        data.forEach(town => {
+                            const option = document.createElement('option');
+                            option.value = town.townName; // İlçe kimliği
+                            option.text = town.townName; // İlçe adı
+                            townDropdown.appendChild(option);
+                        });
+                    } else {
+                        townDropdown.innerHTML = '<option value="">No towns available</option>';
+                    }
+                }
+            });
+        } else {
+            townDropdown.innerHTML = '<option value="">Select a city first</option>';
+        }
+    });
+</script>
+<script>
+    function showErrorMessage(message) {
+        toastr.error(message, 'Hata', {
+            timeOut: 2000, // Hata mesajlarını 2 saniye göster
+            positionClass: 'toast-top-right' // Toast mesajlarının yeri
+        });
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', function (event) {
+        var categorySelect = document.getElementById('Category');
+        var nameInput = document.getElementById('Name');
+        var cityInput = document.getElementById('cityDropdown');
+        var townInput = document.getElementById('townDropdown');
+        var errorMessages = [];
+
+        
+        // Name input'u boş mu kontrol et
+        if (nameInput.value === '') {
+            errorMessages.push('Name Alanını Boş Bırakmayınız');
+        }
+
+        // Category select'i boş mu kontrol et
+        if (categorySelect.value === '') {
+            errorMessages.push('Category Alanını Boş Bırakmayınız');
+        }
+
+        // City input'u boş mu kontrol et
+        if (cityInput.value === '') {
+            errorMessages.push('City Alanını Boş Bırakmayınız');
+        }
+
+        // Town input'u boş mu kontrol et
+        if (townInput.value === '') {
+            errorMessages.push('Town Alanını Boş Bırakmayınız');
+        }
+        if (errorMessages.length > 0) {
+            event.preventDefault(); // Formun gönderilmesini engelle
+            var errorMessagesHtml = '';
+            errorMessages.forEach(function (message) {
+                errorMessagesHtml += '<p>' + message + '</p>';
+            });
+
+            console.log(errorMessages);
+            // jQuery Toast ile hata mesajlarını göster
+            showErrorMessage(errorMessagesHtml);
+        }
+    });
+</script>

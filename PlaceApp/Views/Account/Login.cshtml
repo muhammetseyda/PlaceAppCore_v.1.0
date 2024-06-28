@@ -1,0 +1,120 @@
+﻿@using PlaceApp.Models.Account;
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout_Login";
+}
+<style>
+/* Sayfa stilini ayarla */
+#login {
+    height: 100vh;
+    width: 100%; /* Sayfa genişliği kadar alır */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+        background-color: #241e4f; /* Sayfa arka plan rengi */
+}
+
+/* Formun stilini ayarla */
+.login-form {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px; /* Formun genişliği */
+    background-color: #ffffff; /* Form arka plan rengi */
+    box-shadow: 17px -20px 20px rgba(0, 0, 0, 0.1); /* Forma gölge ekleme */
+    z-index: +3;
+}
+
+/* Form gruplarının stilini ayarla */
+.form-group {
+    margin-bottom: 15px; /* Form grupları arasında boşluk bırakma */
+    border-radius: 10px;
+}
+
+    .btn-block {
+        width: 100%;
+    }
+
+</style>
+<div class="animation">
+    @Html.Partial("_Animation")
+</div>
+
+<div id="login" class="login">
+    <form asp-action="Login" method="post" class="login-form">
+        <input type="hidden" id="ReturnUrl" name="ReturnUrl" value="@ViewBag.ReturnUrl" class="form-control" />
+        <div class="form-group">
+            <label for="Email">E-posta</label>
+            <input type="email" class="form-control" id="Email" name="Email" required>
+        </div>
+        <div class="form-group">
+            <label for="Password">Şifre</label>
+            <input type="password" class="form-control" id="Password" name="Password" required>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="RememberMe" name="RememberMe">
+            <label class="form-check-label" for="RememberMe">Beni hatırla</label>
+        </div>
+        <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Giriş Yap</button>
+        </div>
+        <div class="form-group">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-block">Üye Ol</a>
+        </div>
+    </form>
+</div>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal içeriği -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Hata</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="error-message">@ViewData["LoginError"]</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery kütüphanesi -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js ve Bootstrap JavaScript kütüphaneleri -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Toastr JavaScript kütüphanesi (isteğe bağlı) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<!-- jQuery Toast Plugin kütüphanesi -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+
+<!-- Diğer özel JavaScript dosyaları -->
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+
+<script>
+    var loginError = '@ViewData["LoginError"]';
+
+    $(document).ready(function () {
+        if (loginError) {
+            // Hata mesajı varsa modalı göster
+            $('#modalContent').html(loginError); // Hata mesajını modal içeriğine ekle
+            $('#myModal').modal('show'); // Modalı göster
+        }
+    });
+
+</script>
+
+
+
+
+
+

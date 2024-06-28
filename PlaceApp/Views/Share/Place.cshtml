@@ -1,0 +1,34 @@
+﻿@model List<PlaceApp.Models.SharePlace>
+
+<h2>Paylaştığınız Yerler</h2>
+
+@foreach (var sharePlace in Model)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@sharePlace.Id">
+                @sharePlace.Name
+            </button>
+        </div>
+        <div id="collapse-@sharePlace.Id" class="collapse">
+            <div class="card-body">
+                <h5 class="card-title">
+                    @sharePlace.Name -
+                    @if (sharePlace.Link1 != null)
+                    {
+                        <a href="@sharePlace.Link1" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    }
+
+                </h5>
+                <p class="card-text">
+                    Şehir: @sharePlace.Town/@sharePlace.City<br />
+                    Kategori: @sharePlace.Category<br />
+                    Adres: @sharePlace.Address<br />
+                </p>
+                <a href="/Share/PlaceDetails/@sharePlace.Id" class="btn btn-info btn-sm">Detaylar</a>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,78 @@
+﻿@using DocumentFormat.OpenXml.InkML;
+@using PlaceApp.Data;
+@inject AppDbContext _context
+@using Microsoft.EntityFrameworkCore;
+@model PlaceApp.Models.ShareViewModel
+
+<h2>Paylaşılan Yerler</h2>
+
+@foreach (var sharePlace in Model.SharePlace)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@sharePlace.Id">
+                @sharePlace.UserName bir yer paylaştı. Yer Adı: @sharePlace.Name
+            </button>
+        </div>
+        <div id="collapse-@sharePlace.Id" class="collapse">
+            <div class="card-body">
+                <h5 class="card-title">
+                    @sharePlace.Name -
+                    @if (sharePlace.Link1 != null)
+                    {
+                        <p> - </p>
+                        <a href="@sharePlace.Link1" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    }
+
+                </h5>
+                <p class="card-text">
+                    Şehir: @sharePlace.Town/@sharePlace.City<br />
+                    Kategori: @sharePlace.Category<br />
+                    Adres: @sharePlace.Address<br />
+                </p>
+                <a href="/Place/Details/@sharePlace.PlaceId" class="btn btn-info btn-sm">Detaylar</a>
+            </div>
+        </div>
+    </div>
+}
+
+<br />
+
+<br />
+
+<h2>Paylaşılan Listeler</h2>
+
+@foreach (var sharePlace in Model.SharePlaceList)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@sharePlace.Id">
+                @sharePlace.UserName bir liste paylaştı. Yer Adı: @sharePlace.ListName
+            </button>
+        </div>
+        <div id="collapse-@sharePlace.Id" class="collapse">
+            <div class="card-body">
+                <h5 class="card-title"> Yerler  </h5>
+                <p class="card-text">
+                    @foreach (var placeId in sharePlace.PlaceIds.Split(','))
+                    {
+                        @if (int.TryParse(placeId, out var id))
+                        {
+                            var place = _context.Places.FirstOrDefault(p => p.Id == id);
+                            if (place != null)
+                            {
+                                <li>
+                                    @place.Name - @place.City - @place.Category
+                                </li>
+                            }
+                        }
+                    }
+                </p>
+                <a href="/PlaceList/DetailList/@sharePlace.Id" class="btn btn-info btn-sm">Detaylar</a>
+            </div>
+        </div>
+    </div>
+}
+

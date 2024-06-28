@@ -1,0 +1,129 @@
+﻿@using Microsoft.EntityFrameworkCore;
+@using PlaceApp.Data;
+@model PlaceApp.Models.Places
+@{
+    // var builder = new ConfigurationBuilder()
+    //     .SetBasePath(Directory.GetCurrentDirectory())
+    //     .AddJsonFile("appsettings.json");
+
+    // var configuration = builder.Build();
+
+    // var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    // var connectionString = configuration.GetConnectionString("DefaultConnection");
+    // optionsBuilder.UseSqlServer(connectionString);
+
+    // AppDbContext _context = new AppDbContext(optionsBuilder.Options);
+
+} 
+
+<div>
+    <label for="filterSelect">Filter:</label>
+    <select id="filterSelect">
+        <option value="category">Category</option>
+        <option value="city">City</option>
+        <option value="town">Town</option>
+    </select>
+</div>
+
+<div id="filterOptions" style="display: none;">
+    <!-- İç içe açılan seçenekler burada yer alacak -->
+</div>
+
+
+
+<script>
+           const filterSelect = document.getElementById('filterSelect');
+    const filterOptions = document.getElementById('filterOptions');
+
+    filterSelect.addEventListener('change', function () {
+        const selectedValue = this.value;
+
+        // İç içe açılan seçenekleri temizle
+        filterOptions.innerHTML = '';
+
+        // Seçilen değere göre iç içe açılan seçenekleri oluştur
+        if (selectedValue === 'category') {
+            const categorySelect = document.createElement('select');
+            categorySelect.id = 'categorySelect';
+            categorySelect.innerHTML = '<option>Select a Category</option>' +
+                '<option>Category 1</option>' +
+                '<option>Category 2</option>' +
+                '<option>Category 3</option>';
+            filterOptions.appendChild(categorySelect);
+        } else if (selectedValue === 'city') {
+            const citySelect = document.createElement('select');
+            citySelect.id = 'citySelect';
+            citySelect.innerHTML = '<option>Select a City</option>' +
+                '<option>City 1</option>' +
+                '<option>City 2</option>' +
+                '<option>City 3</option>';
+            filterOptions.appendChild(citySelect);
+        } else if (selectedValue === 'town') {
+            const townSelect = document.createElement('select');
+            townSelect.id = 'townSelect';
+            townSelect.innerHTML = '<option>Select a Town</option>' +
+                '<option>Town 1</option>' +
+                '<option>Town 2</option>' +
+                '<option>Town 3</option>';
+            filterOptions.appendChild(townSelect);
+        }
+
+        // İç içe açılan seçenekleri görünür hale getir
+        filterOptions.style.display = 'block';
+    });
+
+</script>
+
+@* <select class="form-control" id="FilterBy" name="FilterBy">
+    <optgroup label="Category 1">
+        <option>Category</option>
+        @foreach (var item in _context.Category.ToList())
+        {
+            <option>@item.Name</option>
+        }
+    </optgroup>
+</select> *@
+
+@* <select class="form-control" id="FilterBy" name="FilterBy">
+        <div class="form-group col-md-3">
+            <label for="categoryFilter">Category:</label>
+            <select class="form-control" id="categoryFilter" name="categoryFilter">
+
+            <option value="">Kategori</option>
+            @foreach (var item in _context.Category.ToList())
+            {
+                <option value="@item.Name">@item.Name</option>
+            }
+            <option value="">All Categories</option>
+                <option value="Restaurant">Restaurant</option>
+                <option value="Cafe">Cafe</option>
+                <!-- Diğer kategori seçenekleri buraya eklenebilir -->
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="cityFilter">City:</label>
+            <select class="form-control" id="cityFilter" name="cityFilter">
+                <option value="">All Cities</option>
+                <option value="City1">City1</option>
+                <option value="City2">City2</option>
+                <!-- Diğer şehir seçenekleri buraya eklenebilir -->
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label for="townFilter">Town:</label>
+            <select class="form-control" id="townFilter" name="townFilter">
+                <option value="">All Towns</option>
+                <option value="Town1">Town1</option>
+                <option value="Town2">Town2</option>
+                <!-- Diğer ilçe seçenekleri buraya eklenebilir -->
+            </select>
+        </div>
+        <div class="form-group col-md-3">
+            <label>Went:</label>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="wentFilter" name="wentFilter" value="true">
+                <label class="form-check-label" for="wentFilter">Went</label>
+            </div>
+        </div>
+        <!-- Diğer filtreleme seçenekleri buraya eklenebilir -->
+</select> *@

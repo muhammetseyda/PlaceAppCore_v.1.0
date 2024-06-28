@@ -1,0 +1,107 @@
+﻿@model PlaceApp.Models.Users
+
+<h1>Kullanıcı Profil Detayları</h1>
+<div class="profile">
+<table>
+    <tr>
+        <th>Ad</th>
+        <td>@Model.FirstName</td>
+    </tr>
+    <tr>
+        <th>Soyad</th>
+        <td>@Model.LastName</td>
+    </tr>
+    <tr>
+        <th>E-posta</th>
+        <td>@Model.Email</td>
+    </tr> 
+    <tr>
+        <th>Telefon</th>
+        <td>@Model.Phone</td>
+    </tr>
+    <tr>
+        <th>Cinsiyet</th>
+        <td>@Model.Gender</td>
+    </tr>
+</table>
+</div>
+
+<!-- Düzenleme veya başka işlemler için bağlantılar ekleyebilirsiniz -->
+<div class="text-center">
+    <div class="btn-group">
+        <a asp-controller="Profile" asp-action="Edit" asp-route-username="@User.Identity.Name" class="btn btn-primary">Profil Düzenle</a>
+        <a asp-controller="Profile" asp-action="ChangePassword" class="btn btn-secondary">Şifreyi Değiştir</a>
+        @* <button id="deleteAccount" class="btn btn-danger">Hesabı Sil</button> *@
+        <a href="javascript:void(0);" id="deleteAccount" class="btn btn-danger" onclick="deleteAccount()">Hesabı Sil</a>
+    </div>
+
+
+</div>
+<style>
+    /* Profil sayfasını ortalamak için flex kullan */
+    .profile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50vh;
+    }
+
+    /* Tabloya kenarlık eklemek için stil */
+    table {
+        border-collapse: collapse;
+        width: 80%;
+        max-width: 600px;
+        text-align: left;
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    th, td {
+        padding: 10px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #333;
+        color: #fff;
+    }
+
+    a {
+        display: block;
+        margin-top: 10px;
+    }
+
+    /* Tablo içeriğini ortalamak için stil */
+    td {
+        text-align: center;
+    }
+</style>
+
+<script>
+    // Hesabı Sil butonuna tıklandığında
+    document.getElementById('deleteAccount').addEventListener('click', function () {
+        if (confirm('Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+            // Kullanıcıyı silmek için AJAX isteği gönder
+            fetch('/Profile/DeleteAccount', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Başarılı bir şekilde silindiğinde, kullanıcıyı yönlendir
+                        window.location.href = '/Home/Index';
+                    } else {
+                        alert('Hesap silinirken bir hata oluştu.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Hata:', error);
+                });
+        }
+    });
+</script>

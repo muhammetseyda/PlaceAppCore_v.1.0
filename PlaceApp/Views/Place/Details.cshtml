@@ -1,0 +1,342 @@
+﻿<div style="text-align: center;">
+    <!-- Başlık -->
+    <h1 style="font-size: 2em;">
+        <a style="text-decoration: none;" href="/Place/Edit/@Model.Id">
+            <i class="fa-solid fa-pen fa-2xs"></i>
+        </a> 
+        <span class="spacer"> - </span>
+        @Model.Name 
+        <span class="spacer"> - </span>
+        <a href="@Model.Link1" target="_blank">
+            <i class="fa-brands fa-instagram fa-2xs"></i>
+        </a>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ratingModal" data-place-id="@Model.Id" style="float:right;">
+            Değerlendir
+        </button>
+    </h1>
+
+    <p>@Model.Category</p>
+    <p>@Model.Description</p>
+
+
+    <div class="modal fade" id="ratingModal" tabindex="-1" role="dialog" aria-labelledby="ratingModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ratingModalLabel">Değerlendirme Yap</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="ratingForm" method="post" asp-controller="Place" asp-action="SubmitRating">
+                    <input type="hidden" id="placeIdInput" name="placeIdInput" value="@Model.Id">
+                    <div class="form-group">
+                        <label for="atmosphereRating">Atmosfer Puanı:</label>
+                        <div class="rating" id="atmosphereRatingGroup">
+                            <span class="star" data-rating="1">&#9734;</span>
+                            <span class="star" data-rating="2">&#9734;</span>
+                            <span class="star" data-rating="3">&#9734;</span>
+                            <span class="star" data-rating="4">&#9734;</span>
+                            <span class="star" data-rating="5">&#9734;</span>
+                        </div>
+                        <input type="hidden" class="form-control" id="atmosphereRatingInput" name="atmosphereRating" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="foodRating">Yemek Puanı:</label>
+                        <div class="rating" id="foodRatingGroup">
+                            <span class="star" data-rating="1">&#9734;</span>
+                            <span class="star" data-rating="2">&#9734;</span>
+                            <span class="star" data-rating="3">&#9734;</span>
+                            <span class="star" data-rating="4">&#9734;</span>
+                            <span class="star" data-rating="5">&#9734;</span>
+                        </div>
+                        <input type="hidden" class="form-control" id="foodRatingInput" name="foodRating" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceRating">Hizmet Puanı:</label>
+                        <div class="rating" id="serviceRatingGroup">
+                            <span class="star" data-rating="1">&#9734;</span>
+                            <span class="star" data-rating="2">&#9734;</span>
+                            <span class="star" data-rating="3">&#9734;</span>
+                            <span class="star" data-rating="4">&#9734;</span>
+                            <span class="star" data-rating="5">&#9734;</span>
+                        </div>
+                        <input type="hidden" class="form-control" id="serviceRatingInput" name="serviceRating" />
+                    </div>
+                    <style>
+                        .rating {
+                            font-size: 30px; /* Yıldızların büyüklüğünü ayarlayın */
+                        }
+
+                        .star {
+                            cursor: pointer;
+                            color: #ccc; /* İçi boş yıldızların varsayılan rengi */
+                        }
+
+                            
+                            .star.clicked {
+                                color: yellow; /* Fare üzerine gelindiğinde veya tıklandığında sarı renk */
+                            }
+                    </style>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                        <button type="button" class="btn btn-primary" id="submitRatingButton" >Değerlendir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bilgiler -->
+    <div style="text-align: center;">
+        @* <h2>Place Details</h2> *@
+        <div>
+            
+            <p>@Model.City / @Model.Town</p>
+            <p>@Model.Address</p>
+            <p>Went ?:
+                @if (Model.Went == true)
+                {
+                    <i class="fas fa-solid fa-check fa-xl"></i>
+                }
+                @if (Model.Went == false)
+                {
+                    <i class="fa-solid fa-xmark fa-xl" style="color: #ff0000;"></i>
+                }
+            </p>
+            <p>ReryWent ?: 
+            @if (Model.RetryWent == true)
+                {
+                    <i class="fas fa-solid fa-check fa-xl"></i>
+                }
+                @if (Model.RetryWent == false)
+                {
+                    <i class="fa-solid fa-xmark fa-xl" style="color: #ff0000;"></i>
+                }
+            </p>
+            <p>Location: 
+                <a href="@Model.MapsLink" target="_blank">
+                    <i class="fa-solid fa-map fa-xl"></i> </a>
+            </p>
+        </div>
+        
+    </div>
+    <br />
+@if (Model.Link1 != null)
+     {
+        <div class="card mb-3">
+            <div class="card-header">
+                <a data-toggle="collapse" href="#instagramCollapse">
+                    Instagram Profili
+                </a>
+            </div>
+            <div id="instagramCollapse" class="collapse ">
+                <div class="card card-body d-flex justify-content-center align-items-center">
+            
+                        <div class="instagram-embed">
+                            <blockquote class="instagram-media" data-instgrm-permalink="@Model.Link1" data-instgrm-version="13">
+                                <a href="@Model.Link1"></a>
+                            </blockquote>
+                            <script async src="//www.instagram.com/embed.js"></script>
+                        </div>
+            
+            
+                </div>
+            </div>
+        </div>
+    }
+     @if (Model.InstaUrl != null)
+                {
+    <div class="card mb-3">
+        <div class="card-header">
+            <a data-toggle="collapse" href="#reelsCollapse">
+                Reels Videosu
+            </a>
+        </div>
+        <div id="reelsCollapse" class="collapse ">
+                <div class="card card-body d-flex justify-content-center align-items-center">
+               
+                    <div style="display: inline-block;">
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/@Model.InstaUrl/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+                        </blockquote>
+                        <script async src="//www.instagram.com/embed.js"></script>
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+    }
+
+<div class="card mb-3">
+    <div class="card-header">
+        <a data-toggle="collapse" href="#mapCollapse">
+            Haritalar
+        </a>
+    </div>
+    <div id="mapCollapse" class="collapse ">
+            <div class="card card-body d-flex justify-content-center align-items-center">
+                <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAd6SfAUHB-0uWr0nfIiC56CcvC6nnIT4s&q=@Model.Name,@Model.Town+@Model.City"
+                        width="500"
+                        height="500"
+                        style="border: 0; display: inline-block; margin-right: 10px;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+
+
+        </div>
+    </div>
+</div>
+    @if (!(Model.AtmosphereRating == null && Model.FoodRating == null && Model.ServicesRating == null))
+    {
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <a data-toggle="collapse" href="#ratingCollapse">
+                Puanlama
+            </a>
+        </div>
+            <div id="ratingCollapse" class="collapse ">
+            <div class="card card-body d-flex justify-content-center align-items-center">
+                <label for="atmosphereRating">Atmosfer Puanı:</label>
+                <div class="rating" id="atmosphereRatingGroupShow">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="star" data-rating="@i">@if (i <= Model.AtmosphereRating)
+                                {
+                                    @Html.Raw("&#9733;")
+                                }
+                                else
+                                {
+                                    @Html.Raw("&#9734;")
+                                }</span>
+                        }
+                </div>
+                <br>
+                    <label for="foodRating">Yemek Puanı:</label>
+                    <div class="rating" id="foodRatingShow">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="star" data-rating="@i">
+                                @if (i <= Model.FoodRating)
+                                {
+                                    @Html.Raw("&#9733;")
+                                }
+                                else
+                                {
+                                    @Html.Raw("&#9734;")
+                                }
+                            </span>
+                        }
+                    </div>
+                    <br>
+                    <label for="servicesRating">Servis Puanı:</label>
+                    <div class="rating" id="servicesRatingShow">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="star" data-rating="@i">
+                                @if (i <= Model.ServiceRating)
+                                {
+                                    @Html.Raw("&#9733;")
+                                }
+                                else
+                                {
+                                    @Html.Raw("&#9734;")
+                                }
+                            </span>
+                        }
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#atmosphereRatingGroup .star').hover(function () {
+                var rating = $(this).data('rating');
+                $('#atmosphereRatingGroup .star').removeClass('rated');
+                $(this).prevAll().addBack().addClass('rated');
+                highlightStars($('#atmosphereRatingGroup .star'), rating);
+            }, function () {
+                var rating = $('#atmosphereRatingInput').val();
+                highlightStars($('#atmosphereRatingGroup .star'), rated);
+            }).click(function () { // Tıklamada değeri kaydet
+                var rating = $(this).data('rating');
+                $('#atmosphereRatingInput').val(rating); // Tıklanan değeri input'a kaydet
+            });
+
+
+            $('#foodRatingGroup .star').hover(function () {
+                var rating = $(this).data('rating');
+                $('#foodRatingGroup .star').removeClass('rated');
+                $(this).prevAll().addBack().addClass('rated');
+                highlightStars($('#foodRatingGroup .star'), rating);
+            }).click(function () { // Tıklamada değeri kaydet
+                var rating = $(this).data('rating');
+                $('#foodRatingInput').val(rating); // Tıklanan değeri input'a kaydet
+            });
+
+            // Yıldızlara tıklama işlemi - Hizmet Puanı
+            $('#serviceRatingGroup .star').hover(function () {
+                var rating = $(this).data('rating');
+                $('#serviceRatingGroup .star').removeClass('rated');
+                $(this).prevAll().addBack().addClass('rated');
+                highlightStars($('#serviceRatingGroup .star'), rating);
+            }).click(function () { // Tıklamada değeri kaydet
+                var rating = $(this).data('rating');
+                $('#serviceRatingInput').val(rating); // Tıklanan değeri input'a kaydet
+            });
+            function highlightStars(stars, rating) {
+                stars.each(function () {
+                    var starRating = $(this).data('rating');
+                    if (starRating <= rating) {
+                        $(this).css('color', 'yellow');
+                    } else {
+                        $(this).css('color', '#ccc');
+                    }
+                });
+            }
+
+            // Değerlendirme gönderme işlemi
+            $('#submitRatingButton').click(function () {
+                var placeId = $('#placeIdInput').val(); // placeId'yi al
+                var atmosphereRating = $('#atmosphereRatingInput').val();
+                var foodRating = $('#foodRatingInput').val();
+                var serviceRating = $('#serviceRatingInput').val();
+
+                // AJAX isteği ile değerlendirme bilgilerini ve placeId'yi sunucuya gönderin
+                $.ajax({
+                    url: '/Place/SubmitRating',
+                    type: 'POST',
+                    data: {
+                        placeId: placeId,
+                        atmosphereRating: atmosphereRating,
+                        foodRating: foodRating,
+                        serviceRating: serviceRating
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success('Değerlendirme başarıyla gönderildi.');
+                            $('#ratingModal').modal('hide');
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Değerlendirme gönderirken bir hata oluştu: ' + error);
+                    }
+                });
+            });
+        });
+    </script>

@@ -1,0 +1,67 @@
+﻿@using DocumentFormat.OpenXml.InkML;
+@using PlaceApp.Data;
+@inject AppDbContext _context 
+@using Microsoft.EntityFrameworkCore;
+@model List<PlaceApp.Models.SharePlaceList>
+
+<h2>Paylaştığınız Listeler</h2>
+
+@foreach (var sharePlace in Model)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@sharePlace.Id">
+                @sharePlace.ListName
+            </button>
+           @*  <button class="heart-button" data-list-id="@sharePlace.ListId">
+                <i class="fa-solid fa-heart fa-xsm"></i>
+            </button> *@
+
+
+        </div>
+        <div id="collapse-@sharePlace.Id" class="collapse">
+            <div class="card-body">
+                <h5 class="card-title"> Yerler  </h5>
+                <p class="card-text">
+                    @foreach (var placeId in sharePlace.PlaceIds.Split(','))
+                    {
+                        @if (int.TryParse(placeId, out var id))
+                        {
+                            var place = _context.SharePlace.FirstOrDefault(p => p.Id == id);
+                            if (place != null)
+                            {
+                                <li>
+                                    @place.Name - @place.City - @place.Category
+                                </li>
+                            }
+                        }
+                    }
+                </p>
+                <a href="/Share/PlaceListDetails/@sharePlace.Id" class="btn btn-info btn-sm">Detaylar</a>
+            </div> 
+        </div>
+    </div>
+
+
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@* <script>
+    $(document).ready(function () {
+        // Düğmelere tıklanıldığında rengini değiştirmek için bir işlem ekleyin
+        $(".heart-button").click(function () {
+            // Tıklanan düğmenin ListId değerini alın
+            var listId = $(this).data("list-id");
+
+            // Tıklanan düğmenin altındaki ikonun rengini kırmızı yapın
+            $(this).find("i").css("color", "red");
+        });
+    });
+</script> *@
+
+
+
+
+
+
+
